@@ -63,7 +63,7 @@
                     FROM `reflecting-poet-391612.Netflix.values`
                     where Type='Movie')
 
-        select Rating, round(avg(duration),0) duration
+        select Rating, round(avg(duration),1) duration
         from cte 
         group by Rating
         order by duration desc
