@@ -1,0 +1,73 @@
+1. How many movies and TV shows are on Netflix?
+   
+    SELECT Type, count(Type) num_of_type
+    FROM `reflecting-poet-391612.Netflix.values` 
+    group by Type
+    order by num_of_type desc
+
+2. Which content ratings are most used in each country?
+
+    SELECT Country, Rating, count(rating) cnt
+    FROM `reflecting-poet-391612.Netflix.values` 
+    group by Country, Rating
+    order by country, cnt desc
+
+3. What genres are most popular on Netflix?
+
+    with cte as (select Genre_1 Genre,count(Genre_1) cnt
+                FROM `reflecting-poet-391612.Netflix.values`
+                group by Genre_1
+                union all
+                select Genre_2 Genre, Count(Genre_2) cnt
+                from (select nullif(Genre_2, '') Genre_2
+                        FROM `reflecting-poet-391612.Netflix.values`)
+                        Group by Genre_2
+                union all
+                select Genre_3 Genre, Count(Genre_3) cnt
+                from (select nullif(Genre_3, '') Genre_3
+                      FROM `reflecting-poet-391612.Netflix.values`)
+                Group by Genre_3
+                order by cnt desc)
+
+    SELECT Genre, SUM(cnt) AS genre_cnt
+    FROM cte
+    GROUP BY Genre
+    ORDER BY genre_cnt DESC
+
+4. Which genres are more common in TV Shows vs Movies?
+
+    with cte as (select Type, Genre_1 Genre, Count(Genre_1) cnt
+                  from `reflecting-poet-391612.Netflix.values`
+                  group by Genre_1, Type
+                  union all
+                  select Type, Genre_2 Genre, count(Genre_2) cnt
+                  from (select Type, nullif(Genre_2, '') Genre_2
+                        from `reflecting-poet-391612.Netflix.values`)
+                  group by Genre_2,Type
+                  union all
+                  select Type, Genre_3 Genre, count(Genre_3) cnt
+                  from (select Type, nullif(Genre_3, '') Genre_3
+                        from `reflecting-poet-391612.Netflix.values`)
+                        group by Genre_3,Type
+                        order by cnt desc)
+
+                  select Type, Genre, sum(cnt) cnt
+                  from cte
+                  where genre is not null 
+                  group by type, cte.Genre
+                  order by type, cnt desc
+
+5. What is the average movie duration?
+
+        with cte as (SELECT Rating, CAST(REGEXP_EXTRACT(duration, r'(\d+)') AS INT64) AS duration
+                    FROM `reflecting-poet-391612.Netflix.values`
+                    where Type='Movie')
+
+        select Rating, round(avg(duration),0) duration
+        from cte 
+        group by Rating
+        order by duration desc
+ 
+
+
+
