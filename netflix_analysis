@@ -51,11 +51,11 @@
                         group by Genre_3,Type
                         order by cnt desc)
 
-                  select Type, Genre, sum(cnt) cnt
-                  from cte
-                  where genre is not null 
-                  group by type, cte.Genre
-                  order by type, cnt desc
+         select Type, Genre, sum(cnt) cnt
+         from cte
+         where genre is not null 
+         group by type, cte.Genre
+         order by type, cnt desc
 
 5. What is the average movie duration?
 
